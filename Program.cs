@@ -1,15 +1,26 @@
+using Microsoft.EntityFrameworkCore;
+using personapi_dotnet.Data.Interfaces;
+using personapi_dotnet.Data.Repositories;
+using personapi_dotnet.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configura el DbContext (usa la cadena de conexión desde appsettings.json o variable de entorno)
+builder.Services.AddDbContext<PersonaDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Registrar el repositorio
+builder.Services.AddScoped<IPersonaRepository, PersonaRepository>();
+
+// Agrega controladores con vistas
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
