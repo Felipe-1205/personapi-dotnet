@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------
+  # SQL Server
+  # ----------------------------------------------------------------
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_persona
+    environment:
+      SA_PASSWORD: "Strong!Pass123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - persona_network
+
+  # ----------------------------------------------------------------
+  # Init DB: espera a SQL Server y ejecuta DDL (init.sql) + DML (data.sql)
+  # ----------------------------------------------------------------
+  init-db:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: init_db
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./Scripts:/scripts
+    entrypoint: >
+      /bin/bash -c "
+        echo '⏳ Esperando a que SQL Server esté listo…';
+        until /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Strong!Pass123' -Q 'SELECT 1'; do
+          echo 'SQL Server no responde, reintentando en 5s…';
+          sleep 5;
+        done;
+        echo '🚀 Creando esquema y tablas (init.sql)…';
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Strong!Pass123' -i /scripts/init.sql;
+        echo '🚀 Insertando datos de ejemplo (data.sql)…';
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Strong!Pass123' -i /scripts/data.sql;
+        echo '✅ Base de datos “persona_db” provisionada.';
+      "
+    networks:
+      - persona_network
+
+  # ----------------------------------------------------------------
+  # Web API .NET 7 MVC+DAO
+  # ----------------------------------------------------------------
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: persona_api
+    depends_on:
+      - init-db
+    ports:
+      - "5000:80"
+    environment:
+      ConnectionStrings__DefaultConnection: >
+        Server=sqlserver,1433;
+        Database=persona_db;
+        User Id=sa;
+        Password=Strong!Pass123;
+        TrustServerCertificate=true;
+    networks:
+      - persona_network
+
+volumes:
+  sql_data:
+
+networks:
+  persona_network:
+    driver: bridge
