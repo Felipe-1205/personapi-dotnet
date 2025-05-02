@@ -8,49 +8,53 @@ namespace personapi_dotnet.Data.Repositories
 {
     public class PersonaRepository : IPersonaRepository
     {
-        private readonly PersonaDbContext _context;
+        private readonly MasterContext _context;
 
-        public PersonaRepository(PersonaDbContext context)
+        public PersonaRepository(MasterContext context)
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<Persona>> GetAllAsync()
+        
+        public async Task<IEnumerable<Persona>> GetAllPersonas()
         {
-            return await _context.Personas
-                .Include(p => p.Estudios)
-                .Include(p => p.Telefonos)
-                .ToListAsync();
+            return await _context.Personas.ToListAsync();
         }
 
-        public async Task<Persona?> GetByIdAsync(int cc)
+        public async Task<Persona> GetPersonaByCc(int cc)
         {
-            return await _context.Personas
-                .Include(p => p.Estudios)
-                .Include(p => p.Telefonos)
-                .FirstOrDefaultAsync(p => p.Cc == cc);
+            return await _context.Personas.FirstOrDefaultAsync(p => p.Cc == cc);
         }
 
-        public async Task AddAsync(Persona persona)
+        public async Task<Persona> GetPersonaById(int id)
         {
-            _context.Personas.Add(persona);
+            return await _context.Personas.FindAsync(id);
+        }
+
+        public async Task AddPersona(Persona persona)
+        {
+            _context.Add(persona);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Persona persona)
+        public async Task UpdatePersona(Persona persona)
         {
-            _context.Entry(persona).State = EntityState.Modified;
+            _context.Update(persona);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int cc)
+        public async Task DeletePersona(int id)
         {
-            var persona = await _context.Personas.FindAsync(cc);
+            var persona = await _context.Personas.FindAsync(id);
             if (persona != null)
             {
                 _context.Personas.Remove(persona);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public bool PersonaExists(int id)
+        {
+            return _context.Personas.Any(e => e.Cc == id);
         }
     }
 }

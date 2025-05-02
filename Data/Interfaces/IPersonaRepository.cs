@@ -6,10 +6,12 @@ namespace personapi_dotnet.Data.Interfaces
 {
     public interface IPersonaRepository
     {
-        Task<IEnumerable<Persona>> GetAllAsync();
-        Task<Persona?> GetByIdAsync(int cc);
-        Task AddAsync(Persona persona);
-        Task UpdateAsync(Persona persona);
-        Task DeleteAsync(int cc);
+        Task<IEnumerable<Persona>> GetAllPersonas();
+        Task<Persona> GetPersonaByCc(int cc);
+        Task<Persona> GetPersonaById(int id);
+        Task AddPersona(Persona persona);
+        Task UpdatePersona(Persona persona);
+        Task DeletePersona(int id);
+        bool PersonaExists(int id);
     }
 }

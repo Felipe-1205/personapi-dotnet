@@ -2,12 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using personapi_dotnet.Data.Interfaces;
 using personapi_dotnet.Data.Repositories;
 using personapi_dotnet.Models;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configura el DbContext (cadena de conexión desde appsettings.json o variable de entorno)
-builder.Services.AddDbContext<PersonaDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<MasterContext>(options => {
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 // Registrar el repositorio
 builder.Services.AddScoped<IPersonaRepository, PersonaRepository>();
@@ -17,7 +19,10 @@ builder.Services.AddControllersWithViews();
 
 // Habilitar Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "API de Estudios", Version = "v1" });
+});
 
 var app = builder.Build();
 
@@ -30,7 +35,10 @@ if (!app.Environment.IsDevelopment())
 
 // Activar Swagger (también puede estar en producción si prefieres)
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API de Estudios v1");
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

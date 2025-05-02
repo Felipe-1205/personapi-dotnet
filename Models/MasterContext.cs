@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace personapi_dotnet.Models;
 
-public partial class PersonaDbContext : DbContext
+public partial class MasterContext : DbContext
 {
-    public PersonaDbContext()
+    public MasterContext()
     {
     }
 
-    public PersonaDbContext(DbContextOptions<PersonaDbContext> options)
+    public MasterContext(DbContextOptions<MasterContext> options)
         : base(options)
     {
     }
@@ -24,21 +24,20 @@ public partial class PersonaDbContext : DbContext
     public virtual DbSet<Telefono> Telefonos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=localhost,1433;Database=persona_db;User Id=sa;Password=Strong!Pass123;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Estudio>(entity =>
         {
-            entity.HasKey(e => new { e.IdProf, e.CcPer });
+            entity.HasKey(e => new { e.IdProf, e.CcPer }).HasName("PK__estudios__FB3F71A6998CB30A");
 
             entity.ToTable("estudios");
 
             entity.Property(e => e.IdProf).HasColumnName("id_prof");
             entity.Property(e => e.CcPer).HasColumnName("cc_per");
             entity.Property(e => e.Fecha)
-                .HasColumnType("date")
+                .HasColumnType("datetime")
                 .HasColumnName("fecha");
             entity.Property(e => e.Univer)
                 .HasMaxLength(50)
@@ -48,17 +47,17 @@ public partial class PersonaDbContext : DbContext
             entity.HasOne(d => d.CcPerNavigation).WithMany(p => p.Estudios)
                 .HasForeignKey(d => d.CcPer)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_estud_per");
+                .HasConstraintName("estudio_persona_fk");
 
             entity.HasOne(d => d.IdProfNavigation).WithMany(p => p.Estudios)
                 .HasForeignKey(d => d.IdProf)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_estud_prof");
+                .HasConstraintName("estudio_profesion_fk");
         });
 
         modelBuilder.Entity<Persona>(entity =>
         {
-            entity.HasKey(e => e.Cc).HasName("PK__persona__3213666D17245F48");
+            entity.HasKey(e => e.Cc).HasName("PK__persona__3213666D34E95E06");
 
             entity.ToTable("persona");
 
@@ -83,13 +82,13 @@ public partial class PersonaDbContext : DbContext
 
         modelBuilder.Entity<Profesion>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__profesio__3213E83F8C8615B6");
+            entity.HasKey(e => e.Id).HasName("PK__profesion__3213E83FC82CEAE4");
 
             entity.ToTable("profesion");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Des)
-                .IsUnicode(false)
+                .HasColumnType("text")
                 .HasColumnName("des");
             entity.Property(e => e.Nom)
                 .HasMaxLength(90)
@@ -99,7 +98,7 @@ public partial class PersonaDbContext : DbContext
 
         modelBuilder.Entity<Telefono>(entity =>
         {
-            entity.HasKey(e => e.Num).HasName("PK__telefono__DF908D658B993118");
+            entity.HasKey(e => e.Num).HasName("PK__telefono__DF908D654F76749D");
 
             entity.ToTable("telefono");
 
@@ -116,7 +115,7 @@ public partial class PersonaDbContext : DbContext
             entity.HasOne(d => d.DuenioNavigation).WithMany(p => p.Telefonos)
                 .HasForeignKey(d => d.Duenio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_tel_per");
+                .HasConstraintName("telefono_persona_fk");
         });
 
         OnModelCreatingPartial(modelBuilder);
