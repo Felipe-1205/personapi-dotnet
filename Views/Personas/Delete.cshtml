@@ -1,0 +1,28 @@
+@model personapi_dotnet.Models.Persona
+
+@{
+    ViewData["Title"] = "Eliminar Persona";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h4>¿Seguro que deseas eliminar a @Model.Nombre @Model.Apellido?</h4>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <dl class="row">
+      <dt class="col-sm-2">CC</dt>
+      <dd class="col-sm-10">@Model.Cc</dd>
+      <dt class="col-sm-2">Edad</dt>
+      <dd class="col-sm-10">@Model.Edad</dd>
+      <dt class="col-sm-2">Género</dt>
+      <dd class="col-sm-10">@Model.Genero</dd>
+    </dl>
+  </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Cc" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+</form>
