@@ -19,7 +19,7 @@ public partial class MasterContext : DbContext
 
     public virtual DbSet<Persona> Personas { get; set; }
 
-    public virtual DbSet<Profesion> Profesions { get; set; }
+    public virtual DbSet<Profesion> Profesiones { get; set; }
 
     public virtual DbSet<Telefono> Telefonos { get; set; }
 
