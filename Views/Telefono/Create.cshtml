@@ -1,0 +1,32 @@
+@model personapi_dotnet.Models.Telefono
+
+@{
+    ViewData["Title"] = "Crear Teléfono";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label asp-for="Num" class="form-label"></label>
+        <input asp-for="Num" class="form-control" />
+        <span asp-validation-for="Num" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Oper" class="form-label"></label>
+        <input asp-for="Oper" class="form-control" />
+        <span asp-validation-for="Oper" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Duenio" class="form-label"></label>
+        <select asp-for="Duenio" asp-items="ViewBag.Duenio" class="form-select"></select>
+        <span asp-validation-for="Duenio" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,48 @@
+@model IEnumerable<personapi_dotnet.Models.Estudio>
+
+@{
+    ViewData["Title"] = "Lista de Estudios";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Crear nuevo estudio</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Prof. ID</th>
+            <th>Persona CC</th>
+            <th>Fecha</th>
+            <th>Universidad</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.IdProf</td>
+            <td>@item.CcPer</td>
+            <td>@string.Format("{0:yyyy‑MM‑dd}", item.Fecha)</td>
+            <td>@item.Univer</td>
+            <td>
+                <a class="btn btn-sm btn-info"
+                   asp-action="Details"
+                   asp-route-id="@item.IdProf"
+                   asp-route-cc="@item.CcPer">Ver</a>
+                <a class="btn btn-sm btn-warning"
+                   asp-action="Edit"
+                   asp-route-id="@item.IdProf"
+                   asp-route-cc="@item.CcPer">Editar</a>
+                <a class="btn btn-sm btn-danger"
+                   asp-action="Delete"
+                   asp-route-id="@item.IdProf"
+                   asp-route-cc="@item.CcPer">Eliminar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

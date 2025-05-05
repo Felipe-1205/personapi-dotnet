@@ -1,0 +1,30 @@
+@model personapi_dotnet.Models.Estudio
+
+@{
+    ViewData["Title"] = "Detalle de Estudio";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<dl class="row">
+    <dt class="col-sm-2">Prof. ID</dt>
+    <dd class="col-sm-10">@Model.IdProf</dd>
+
+    <dt class="col-sm-2">Persona CC</dt>
+    <dd class="col-sm-10">@Model.CcPer</dd>
+
+    <dt class="col-sm-2">Fecha</dt>
+    <dd class="col-sm-10">@string.Format("{0:yyyy‑MM‑dd}", Model.Fecha)</dd>
+
+    <dt class="col-sm-2">Universidad</dt>
+    <dd class="col-sm-10">@Model.Univer</dd>
+</dl>
+
+<p>
+    <a class="btn btn-secondary"
+       asp-action="Index">Volver</a>
+    <a class="btn btn-warning"
+       asp-action="Edit"
+       asp-route-id="@Model.IdProf"
+       asp-route-cc="@Model.CcPer">Editar</a>
+</p>
