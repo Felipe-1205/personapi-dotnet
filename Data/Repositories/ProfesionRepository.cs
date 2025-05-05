@@ -20,7 +20,7 @@ namespace personapi_dotnet.Data.Repositories
             return await _context.Profesiones.ToListAsync();
         }
 
-        public async Task<Profesion> GetProfesionById()
+        public async Task<Profesion> GetProfesionById(int id)
         {
             return await _context.Profesiones.FindAsync(id);
         }
@@ -42,7 +42,7 @@ namespace personapi_dotnet.Data.Repositories
             var profesion = await _context.Profesiones.FindAsync(id);
             if(profesion != null)
             {
-                _context.Personas.Remove(profesion);
+                _context.Profesiones.Remove(profesion);
                 await _context.SaveChangesAsync();
             }
         }

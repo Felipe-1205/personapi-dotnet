@@ -15,25 +15,30 @@ namespace personapi_dotnet.Data.Repocitories
         {
             _context = context;
         }
+
         public async Task<IEnumerable<Telefono>> GetAllTelefonos()
         {
             return await _context.Telefonos.ToListAsync();
         }
-        public async Task<Telefono> GetTelefonoById(int id)
+
+        public async Task<Telefono> GetTelefonoById(string id)
         {
             return await _context.Telefonos.FindAsync(id);
         }
+
         public async Task AddTelefono(Telefono telefono)
         {
             _context.Add(telefono);
             await _context.SaveChangesAsync();
         }
+
         public async Task UpdateTelefono(Telefono telefono)
         {
             _context.Update(telefono);
             await _context.SaveChangesAsync();
         }
-        public async Task DeleteTelefono(int id)
+
+        public async Task DeleteTelefono(string id)
         {
             var telefono = await _context.Telefonos.FindAsync(id);
             if (telefono != null)
@@ -42,9 +47,10 @@ namespace personapi_dotnet.Data.Repocitories
                 await _context.SaveChangesAsync();
             }
         }
-        public bool TelefonoExists(int id)
+
+        public bool TelefonoExists(string id)
         {
-            return _context.Telefonos.Any(e => e.Id == id);
+            return _context.Telefonos.Any(e => e.Num == id);
         }
     }
 }

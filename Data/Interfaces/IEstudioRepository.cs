@@ -10,7 +10,7 @@ namespace personapi_dotnet.Data.Interfaces
         Task<Estudio> GetEstudioByIdAndCc(int idProf, int ccPer);
         Task AddEstudio(Estudio estudio);
         Task UpdateEstudio(Estudio estudio);
-        Task DeleteEstudio(int id);
+        Task DeleteEstudio(int idProf, int ccPer);
         bool EstudioExists(int id);
     }
 }

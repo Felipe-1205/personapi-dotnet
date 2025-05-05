@@ -1,0 +1,53 @@
+@model IEnumerable<personaapi_dotnet.Models.Entities.Estudio>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Univer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CcPerNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdProfNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Univer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CcPerNavigation.Cc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdProfNavigation.Id)
+            </td>
+            <td>
+                    @Html.ActionLink("Edit", "Edit", new { idProf = item.IdProf, ccPer = item.CcPer }) |
+                    @Html.ActionLink("Details", "Details", new { idProf = item.IdProf, ccPer = item.CcPer }) |
+                    @Html.ActionLink("Delete", "Delete", new { idProf = item.IdProf, ccPer = item.CcPer })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

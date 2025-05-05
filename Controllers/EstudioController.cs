@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using personapi_dotnet.Data.Interfaces;
 using personapi_dotnet.Models;
@@ -10,10 +11,14 @@ namespace personapi_dotnet.Controllers
     public class EstudioController : Controller
     {
         private readonly IEstudioRepository _estudioRepository;
+        private readonly IPersonaRepository _personaRepository;
+        private readonly IProfesionRepository _profesionRepository;
 
-        public EstudioController(IEstudioRepository estudioRepository)
+        public EstudioController(IEstudioRepository estudioRepository, IPersonaRepository personaRepository, IProfesionRepository profesionRepository)
         {
             _estudioRepository = estudioRepository;
+            _personaRepository = personaRepository;
+            _profesionRepository = profesionRepository;
         }
 
         // GET: api/estudio
@@ -28,14 +33,14 @@ namespace personapi_dotnet.Controllers
         // GET: api/estudio/{id}
         [HttpGet("details/{id}/{cc}")]
         [ActionName(nameof(Details))]
-        public async Task<IActionResult> Details(int? id, int? cc)
+        public async Task<IActionResult> Details(int? idProf, int? ccPer)
         {
-            if (id == null)
+            if (idProf == null || ccPer == null)
             {
                 return NotFound();
             }
 
-            var estudio = await _estudioRepository.GetEstudioByIdAndCc(id.Value, cc.Value);
+            var estudio = await _estudioRepository.GetEstudioByIdAndCc(idProf.Value, ccPer.Value);
             if (estudio == null)
             {
                 return NotFound();
@@ -46,8 +51,10 @@ namespace personapi_dotnet.Controllers
 
         // GET: api/estudio/create
         [HttpGet("create")]
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
+            ViewData["CcPer"] = new SelectList(await _personaRepository.GetAllPersonas(), "Cc", "Cc");
+            ViewData["IdProf"] = new SelectList(await _profesionRepository.GetAllProfesiones(), "Id", "Id");
             return View();
         }
 
@@ -57,28 +64,44 @@ namespace personapi_dotnet.Controllers
         [ActionName(nameof(Create))]
         public async Task<IActionResult> Create([Bind("IdProf,CcPer,Fecha,Univer")] Estudio estudio)
         {
+            // Realizar la validación del número de identificación de la persona y la existencia del profesor
+            var persona = await _personaRepository.GetPersonaByCc(estudio.CcPer);
+            var profesion = await _profesionRepository.GetProfesionById(estudio.IdProf);
+
+            estudio.IdProfNavigation = profesion;
+            estudio.CcPerNavigation = persona;
+
+            ModelState.Clear();
+            TryValidateModel(estudio);
+
             if (ModelState.IsValid)
             {
                 await _estudioRepository.AddEstudio(estudio);
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewData["CcPer"] = new SelectList(await _personaRepository.GetAllPersonas(), "Cc", "Cc", estudio.CcPer);
+            ViewData["IdProf"] = new SelectList(await _profesionRepository.GetAllProfesiones(), "Id", "Id", estudio.IdProf);
+
             return View(estudio);
         }
 
         // GET: api/estudio/edit/{id}
         [HttpGet("edit/{id}")]
-        public async Task<IActionResult> Edit(int? id, int? cc)
+        public async Task<IActionResult> Edit(int? idProf, int? ccPer)
         {
-            if (id == null)
+            if (idProf == null || ccPer == null)
             {
                 return NotFound();
             }
 
-            var estudio = await _estudioRepository.GetEstudioByIdAndCc(id.Value, cc.Value);
+            var estudio = await _estudioRepository.GetEstudioByIdAndCc(idProf.Value, ccPer.Value);
             if (estudio == null)
             {
                 return NotFound();
             }
+            ViewData["CcPer"] = new SelectList(await _personaRepository.GetAllPersonas(), "Cc", "Cc", estudio.CcPer);
+            ViewData["IdProf"] = new SelectList(await _profesionRepository.GetAllProfesiones(), "Id", "Id", estudio.IdProf);
             return View(estudio);
         }
 
@@ -86,18 +109,28 @@ namespace personapi_dotnet.Controllers
         [HttpPost("edit/{id}")]
         [ValidateAntiForgeryToken]
         [ActionName(nameof(Edit))]
-        public async Task<IActionResult> Edit(int id, Create([Bind("IdProf,CcPer,Fecha,Univer")] Estudio estudio))
+        public async Task<IActionResult> Edit(int? idProf, int? ccPer, [Bind("IdProf,CcPer,Fecha,Univer")] Estudio estudio)
         {
-            if (id != persona.Cc)
+            if (idProf != estudio.IdProf || ccPer != estudio.CcPer)
             {
                 return NotFound();
             }
+
+            // Realizar la validación del número de identificación de la persona y la existencia del profesor
+            var persona = await _personaRepository.GetPersonaByCc(estudio.CcPer);
+            var profesion = await _profesionRepository.GetProfesionById(estudio.IdProf);
+
+            estudio.IdProfNavigation = profesion;
+            estudio.CcPerNavigation = persona;
+
+            ModelState.Clear();
+            TryValidateModel(estudio);
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _estudioRepository.UpdatePersona(estudio);
+                    await _estudioRepository.UpdateEstudio(estudio);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -112,19 +145,21 @@ namespace personapi_dotnet.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CcPer"] = new SelectList(await _personaRepository.GetAllPersonas(), "Cc", "Cc", estudio.CcPer);
+            ViewData["IdProf"] = new SelectList(await _profesionRepository.GetAllProfesiones(), "Id", "Id", estudio.IdProf);
             return View(estudio);
         }
 
         // GET: api/persona/delete/{id}
         [HttpGet("delete/{id}")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? idProf, int? ccPer)
         {
-            if (id == null)
+            if (idProf == null || ccPer == null)
             {
                 return NotFound();
             }
 
-            var estudio = await _estudioRepository.GetEstudioById(id.Value);
+            var estudio = await _estudioRepository.GetEstudioByIdAndCc(idProf.Value, ccPer.Value);
             if (estudio == null)
             {
                 return NotFound();
@@ -137,9 +172,9 @@ namespace personapi_dotnet.Controllers
         [HttpPost("delete/{id}")]
         [ValidateAntiForgeryToken]
         [ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? idProf, int? ccPer)
         {
-            await _estudioRepository.DeleteEstudio(id);
+            await _estudioRepository.DeleteEstudio(idProf.Value, ccPer.Value);
             return RedirectToAction(nameof(Index));
         }
     }

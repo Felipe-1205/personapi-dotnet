@@ -22,7 +22,7 @@ namespace personapi_dotnet.Controllers
         public async Task<IActionResult> Index()
         {
             var profesion = await _profesionRepository.GetAllProfesiones();
-            return View(profesiones);
+            return View(profesion);
         }
 
         // GET: api/profesion/{id}
@@ -124,7 +124,7 @@ namespace personapi_dotnet.Controllers
                 return NotFound();
             }
 
-            var profesion = await _personaRepository.GetProfesionById(id.Value);
+            var profesion = await _profesionRepository.GetProfesionById(id.Value);
             if (profesion == null)
             {
                 return NotFound();

@@ -3,6 +3,7 @@ using personapi_dotnet.Data.Interfaces;
 using personapi_dotnet.Data.Repositories;
 using personapi_dotnet.Models;
 using Microsoft.OpenApi.Models;
+using personapi_dotnet.Data.Repocitories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,9 @@ builder.Services.AddDbContext<MasterContext>(options => {
 
 // Registrar el repositorio
 builder.Services.AddScoped<IPersonaRepository, PersonaRepository>();
+builder.Services.AddScoped<IEstudioRepository, EstudioRepository>();
+builder.Services.AddScoped<IProfesionRepository, ProfesionRepository>();
+builder.Services.AddScoped<ITelefonoRepository, TelefonoRepository>();
 
 // Agrega controladores con vistas
 builder.Services.AddControllersWithViews();

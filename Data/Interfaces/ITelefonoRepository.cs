@@ -7,10 +7,10 @@ namespace personapi_dotnet.Data.Interfaces
     public interface ITelefonoRepository
     {
         Task<IEnumerable<Telefono>> GetAllTelefonos();
-        Task<Telefono> GetTelefonoById(int id);
-        Task AddTelefono(Telefono persona);
-        Task UpdateTelefono(Telefono persona);
-        Task DeleteTelefono(int id);
-        bool TelefonoExists(int id);
+        Task<Telefono> GetTelefonoById(string id);
+        Task AddTelefono(Telefono telefono);
+        Task UpdateTelefono(Telefono telefono);
+        Task DeleteTelefono(string id);
+        bool TelefonoExists(string id);
     }
 }

@@ -17,12 +17,18 @@ namespace personapi_dotnet.Data.Repositories
 
         public async Task<IEnumerable<Estudio>> GetAllEstudios()
         {
-            return await _context.Estudios.ToListAsync();
+            return await _context.Estudios
+                .Include(e => e.CcPerNavigation)
+                .Include(e => e.IdProfNavigation)
+                .ToListAsync();
         }
 
-        public async Task<Estudio> GetEstudioById(int idProf, int ccPer)
+        public async Task<Estudio> GetEstudioByIdAndCc(int idProf, int ccPer)
         {
-            return await _context.Estudios.FindAsync(idProf, ccPer);
+            return await _context.Estudios
+                .Include(e => e.CcPerNavigation)
+                .Include(e => e.IdProfNavigation)
+                .FirstOrDefaultAsync(m => m.IdProf == idProf && m.CcPer == ccPer);
         }
 
         public async Task AddEstudio(Estudio estudio)
@@ -37,7 +43,7 @@ namespace personapi_dotnet.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteEstudio(int idProf, ccPer)
+        public async Task DeleteEstudio(int idProf, int ccPer)
         {
             var estudio = await _context.Estudios.FindAsync(idProf, ccPer);
             if(estudio != null)
