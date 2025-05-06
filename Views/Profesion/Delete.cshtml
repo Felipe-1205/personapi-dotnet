@@ -20,3 +20,10 @@
     <button type="submit" class="btn btn-danger">Eliminar</button>
     <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
 </form>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}

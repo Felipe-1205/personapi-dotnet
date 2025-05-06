@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace personapi_dotnet.Models;
 
@@ -24,7 +25,17 @@ public partial class MasterContext : DbContext
     public virtual DbSet<Telefono> Telefonos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=sqlserver,1433;Database=persona_db;User Id=sa;Password=Strong!Pass123;TrustServerCertificate=True;");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,26 +108,29 @@ public partial class MasterContext : DbContext
         });
 
         modelBuilder.Entity<Telefono>(entity =>
-        {
-            entity.HasKey(e => e.Num).HasName("PK__telefono__DF908D654F76749D");
+{
+    entity.HasKey(e => e.Num).HasName("PK__telefono__3213E83F");
 
-            entity.ToTable("telefono");
+    entity.ToTable("telefono");
 
-            entity.Property(e => e.Num)
-                .HasMaxLength(15)
-                .IsUnicode(false)
-                .HasColumnName("num");
-            entity.Property(e => e.Duenio).HasColumnName("duenio");
-            entity.Property(e => e.Oper)
-                .HasMaxLength(45)
-                .IsUnicode(false)
-                .HasColumnName("oper");
+    entity.Property(e => e.Num)
+        .HasMaxLength(15)
+        .IsUnicode(false)
+        .HasColumnName("num");
 
-            entity.HasOne(d => d.DuenioNavigation).WithMany(p => p.Telefonos)
-                .HasForeignKey(d => d.Duenio)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("telefono_persona_fk");
-        });
+    entity.Property(e => e.Oper)
+        .HasMaxLength(45)
+        .IsUnicode(false)
+        .HasColumnName("oper");
+
+    entity.Property(e => e.Duenio).HasColumnName("duenio");
+
+    entity.HasOne(d => d.DuenioNavigation)
+        .WithMany(p => p.Telefonos)
+        .HasForeignKey(d => d.Duenio)
+        .OnDelete(DeleteBehavior.ClientSetNull)
+        .HasConstraintName("FK_tel_per");
+});
 
         OnModelCreatingPartial(modelBuilder);
     }

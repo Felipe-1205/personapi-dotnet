@@ -6,7 +6,6 @@ using personapi_dotnet.Models;
 namespace personapi_dotnet.Controllers
 {
     [Route("api/profesion")]
-    [ApiController]
     public class ProfesionController : Controller
     {
         private readonly IProfesionRepository _profesionRepository;
@@ -139,8 +138,20 @@ namespace personapi_dotnet.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _profesionRepository.DeleteProfesion(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _profesionRepository.DeleteProfesion(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                // Loguea el error si es necesario
+                Console.WriteLine(ex.Message);
+
+                // Muestra un mensaje amigable al usuario
+                TempData["ErrorMessage"] = "No se puede eliminar esta Profesion porque está asociada a otros datos.";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
         }
     }
 }

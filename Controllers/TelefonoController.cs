@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 namespace personapi_dotnet.Controllers
 {
     [Route("api/telefono")]
-    [ApiController]
     public class TelefonoController:Controller
     {
         private readonly ITelefonoRepository _telefonoRepository;

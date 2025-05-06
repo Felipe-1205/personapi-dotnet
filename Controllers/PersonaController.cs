@@ -6,7 +6,6 @@ using personapi_dotnet.Models;
 namespace personapi_dotnet.Controllers
 {
     [Route("api/persona")]
-    [ApiController]
     public class PersonasController : Controller
     {
         private readonly IPersonaRepository _personaRepository;
@@ -139,8 +138,20 @@ namespace personapi_dotnet.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _personaRepository.DeletePersona(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _personaRepository.DeletePersona(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                // Loguea el error si es necesario
+                Console.WriteLine(ex.Message);
+
+                // Muestra un mensaje amigable al usuario
+                TempData["ErrorMessage"] = "No se puede eliminar esta persona porque está asociada a otros datos.";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
         }
     }
 }

@@ -17,7 +17,7 @@
             <th>Persona CC</th>
             <th>Fecha</th>
             <th>Universidad</th>
-            <th></th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -29,18 +29,9 @@
             <td>@string.Format("{0:yyyy‑MM‑dd}", item.Fecha)</td>
             <td>@item.Univer</td>
             <td>
-                <a class="btn btn-sm btn-info"
-                   asp-action="Details"
-                   asp-route-id="@item.IdProf"
-                   asp-route-cc="@item.CcPer">Ver</a>
-                <a class="btn btn-sm btn-warning"
-                   asp-action="Edit"
-                   asp-route-id="@item.IdProf"
-                   asp-route-cc="@item.CcPer">Editar</a>
-                <a class="btn btn-sm btn-danger"
-                   asp-action="Delete"
-                   asp-route-id="@item.IdProf"
-                   asp-route-cc="@item.CcPer">Eliminar</a>
+                <a class="btn btn-sm btn-info" asp-action="Details" asp-route-idProf="@item.IdProf" asp-route-ccPer="@item.CcPer">Ver</a>
+                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-idProf="@item.IdProf" asp-route-ccPer="@item.CcPer">Editar</a>
+                <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-idProf="@item.IdProf" asp-route-ccPer="@item.CcPer">Eliminar</a>
             </td>
         </tr>
     }
